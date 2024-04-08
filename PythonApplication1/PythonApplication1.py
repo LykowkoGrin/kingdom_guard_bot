@@ -74,8 +74,9 @@ def new_frame_gray(mgr):
 	return cv2.cvtColor(new_frame(mgr),cv2.COLOR_BGR2GRAY)
 
 def color_filter(image,hsv_lower,hsv_upper):
-	pass
-	
+	hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+	thresh = cv2.inRange(hsv, hsv_lower, hsv_upper)
+	return thresh
 
 for i in window_names:
 	wnd = WindowMgr()
@@ -91,11 +92,11 @@ loop_flag = True
 while loop_flag:
 	for mgr in window_mgrs:
 		mgr.set_foreground()
-		frame = new_frame_gray(mgr)
-		
+		frame = new_frame(mgr)
+		res = color_filter(frame,np.array([30,150,50]),np.array([255,255,180]))
 		#test git
 		
-		cv2.imshow('Screen Capture', frame)
+		cv2.imshow('Screen Capture', res)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			loop_flag = False
 			break
