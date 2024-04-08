@@ -69,7 +69,12 @@ def get_template_pos(gray_img,template,threshold):
 def new_frame(mgr):
 	x,y,w,h = mgr.window_size()
 	img = pyautogui.screenshot(region=(x,y,w,h))
-	return cv2.cvtColor( np.array(img),cv2.COLOR_BGR2GRAY)
+	return np.array(img)
+def new_frame_gray(mgr):
+	return cv2.cvtColor(new_frame(mgr),cv2.COLOR_BGR2GRAY)
+
+def color_filter(image,hsv_lower,hsv_upper):
+	pass
 	
 
 for i in window_names:
@@ -86,8 +91,9 @@ loop_flag = True
 while loop_flag:
 	for mgr in window_mgrs:
 		mgr.set_foreground()
-
-		frame = new_frame(mgr)
+		frame = new_frame_gray(mgr)
+		
+		#test git
 		
 		cv2.imshow('Screen Capture', frame)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
