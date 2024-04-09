@@ -46,7 +46,6 @@ class WindowMgr:
 	def resize_to_cool(self):
 		x,y,w,h = self.window_size()
 		win32gui.MoveWindow(self._handle, x, y, COOL_WIGHT, COOL_HEIGHT, True)
-#
 
 def click(global_x,global_y):
 	pyautogui.moveTo(global_x, global_y, duration=0.25)
@@ -78,12 +77,34 @@ def color_filter(image,hsv_lower,hsv_upper):
 	thresh = cv2.inRange(hsv, hsv_lower, hsv_upper)
 	return thresh
 
+def find_bigger_counter(thresh):
+	moments = cv2.moments(thresh, 1)
+	dM01 = moments['m01']
+	dM10 = moments['m10']
+	dArea = moments['m00']
+	return int(dM10 / dArea),int(dM01 / dArea)
+
 for i in window_names:
 	wnd = WindowMgr()
 	wnd.find_window_wildcard(i)
 	wnd.resize_to_cool()
 	time.sleep(0.5)
 	window_mgrs.append(wnd)
+	
+def main_script(mgr):
+	mgr.set_foreground()
+	frame = new_frame(mgr)
+	mask = color_mask(frame,np.array([30,150,50]),np.array([255,255,180]))
+	x,y = find_bigger_counter(mask)
+	cv2.circle(frame, (x, y), 10, (0,0,255), -1)
+	
+	cv2.imshow('Screen Capture', frame)
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		return False
+
+
+	return True
+	
 	
 
 #testim = cv2.imread("testim.png",1)
