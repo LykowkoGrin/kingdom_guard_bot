@@ -7,7 +7,7 @@ import time
 
 COOL_WIGHT = 450
 COOL_HEIGHT = 768
-window_names = ["BlueStacks App Player 3"]
+window_names = ["BlueStacks App Player 4","BlueStacks App Player 3"]
 window_mgrs = []
 delay_time = 2
 
@@ -72,7 +72,7 @@ def get_template_pos(gray_img,template,threshold):
 def new_frame(mgr):
 	x,y,w,h = mgr.window_size()
 	img = pyautogui.screenshot(region=(x,y,w,h))
-	return np.array(img)
+	return cv2.cvtColor(np.array(img),cv2.COLOR_RGB2BGR)
 def new_frame_gray(mgr):
 	return cv2.cvtColor(new_frame(mgr),cv2.COLOR_BGR2GRAY)
 
@@ -87,6 +87,22 @@ def find_bigger_counter(thresh):
 	dM10 = moments['m10']
 	dArea = moments['m00']
 	return int(dM10 / dArea),int(dM01 / dArea)
+
+def return_the_menu(mgr):
+	podtverdit2 = cv2.cvtColor(cv2.imread("Podtverdit2.png",1),cv2.COLOR_BGR2GRAY)
+	mechi = cv2.cvtColor(cv2.imread("Mechi.png",1),cv2.COLOR_BGR2GRAY)
+	for i in range(4):
+		pyautogui.press('esc')
+		time.sleep(0.5)
+	frame = new_frame_gray(mgr)
+	x,y = get_template_pos(frame,podtverdit2,0.7)
+	if(x != None):
+		pyautogui.press('esc')
+		time.sleep(0.5)
+	frame = new_frame_gray(mgr)
+	click_on_template(mgr,frame,mechi,0.7)
+	time.sleep(delay_time)
+	
 
 def click_on_template(mgr,gray_img,template,threshold):
 	for i in range(0,3):
@@ -104,12 +120,10 @@ def click_on_template(mgr,gray_img,template,threshold):
 for i in window_names:
 	wnd = WindowMgr()
 	wnd.find_window_wildcard(i)
-	wnd.resize_to_cool()
-	time.sleep(0.5)
-	window_mgrs.append(wnd)
+	window_mgrs.append(wnd) 
 	
-def main_script(mgr):
-	
+def start_group_attack(mgr):
+	#сделать возврат на esc
 	window_x,window_y,_,_ = mgr.window_size()
 	globus = cv2.cvtColor(cv2.imread("Globus.png",1),cv2.COLOR_BGR2GRAY)
 	poisk = cv2.cvtColor(cv2.imread("Poisk.png",1),cv2.COLOR_BGR2GRAY)
@@ -136,12 +150,12 @@ def main_script(mgr):
 	#if(not click_on_template(mgr,frame,grup_attack,0.7)):
 	#	return False
 	#time.sleep(2)
-	for i in range(0,10):
-		frame = new_frame_gray(mgr)
-		if(not click_on_template(mgr,frame,plusik,0.5)):
-			return 0
-		time.sleep(0.5)
-	time.sleep(delay_time)
+	#for i in range(0,10):
+	#	frame = new_frame_gray(mgr)
+	#	if(not click_on_template(mgr,frame,plusik,0.5)):
+	#		return 0
+	#	time.sleep(0.5)
+	#time.sleep(delay_time)
 	
 	frame = new_frame_gray(mgr)
 	if(not click_on_template(mgr,frame,poisk_grup,0.5)):
@@ -161,12 +175,28 @@ def main_script(mgr):
 	
 	#грубая сила
 	strelka_w,strelka_h = strelka.shape
-	pyautogui.click(window_x + strelka_x + strelka_w/2,window_y + strelka_y + strelka_h + 20,1,0.01)#ЗДЕСЬ НА СКОЛЬКО ТЫКАТЬ ПОД СТРЕЛКУ!!!
+	rect_monstr_x0 = int(strelka_x - 2 * strelka_w)
+	rect_monstr_y0 = int(strelka_y + strelka_h)
+	rect_monstr_w = int(5 * strelka_w)
+	rect_monstr_h = int(5 * strelka_h)
+	rect_monstr = new_frame(mgr)[rect_monstr_y0:rect_monstr_y0 + rect_monstr_h,rect_monstr_x0:rect_monstr_x0 + rect_monstr_w]
+	monstr_mask = color_mask(rect_monstr,np.array([0, 100, 100]),np.array([10, 255, 255]))
+	monstr_x,monstr_y = find_bigger_counter(monstr_mask)
+	
+	pyautogui.click(rect_monstr_x0 + window_x+ monstr_x,rect_monstr_y0 + window_y + monstr_y,1,0.001)
+
 	time.sleep(delay_time)
+	###
 	
 	frame = new_frame_gray(mgr)
 	if(not click_on_template(mgr,frame,start_grup_attack,0.5)):
-		return 0
+		frame = new_frame_gray(mgr)
+		if(not click_on_template(mgr,frame,mechi,0.5)):
+			return 0
+		time.sleep(0.5)
+		pyautogui.click()
+		time.sleep(delay_time)
+		return 1
 	time.sleep(delay_time)
 	
 	frame = new_frame_gray(mgr)
@@ -205,27 +235,65 @@ def main_script(mgr):
 	#if cv2.waitKey(1) & 0xFF == ord('q'):
 	#	return False
 	
+def farm_shahta(mgr):
+	bashnya = cv2.cvtColor(cv2.imread("Bashnya.png",1),cv2.COLOR_BGR2GRAY)
+	shahta = cv2.cvtColor(cv2.imread("Shahta.png",1),cv2.COLOR_BGR2GRAY)
+	polychit = cv2.cvtColor(cv2.imread("Polychit.png",1),cv2.COLOR_BGR2GRAY)
+	krestik = cv2.cvtColor(cv2.imread("Krestik.png",1),cv2.COLOR_BGR2GRAY)
+	mechi = cv2.cvtColor(cv2.imread("Mechi.png",1),cv2.COLOR_BGR2GRAY)
+	podtverdit2 = cv2.cvtColor(cv2.imread("Podtverdit2.png",1),cv2.COLOR_BGR2GRAY)
 	
+	frame = new_frame_gray(mgr)
+	if(not click_on_template(mgr,frame,bashnya,0.5)):
+		return 0
+	time.sleep(delay_time)
+	
+	frame = new_frame_gray(mgr)
+	if(not click_on_template(mgr,frame,shahta,0.5)):
+		return 0
+	time.sleep(delay_time)
+	
+	frame = new_frame_gray(mgr)
+	click_on_template(mgr,frame,polychit,0.5)
+	time.sleep(delay_time)
+	
+	frame = new_frame_gray(mgr)
+	if(not click_on_template(mgr,frame,podtverdit2,0.8)):
+		if(not click_on_template(mgr,frame,krestik,0.5)):
+			return 0
+	time.sleep(delay_time)
+	
+	
+	frame = new_frame_gray(mgr)
+	if(not click_on_template(mgr,frame,mechi,0.5)):
+		return 0
+	time.sleep(delay_time)
+	
+	return 2
 
-#testim = cv2.imread("testim.png",1)
-#testim = cv2.cvtColor(testim,cv2.COLOR_BGR2GRAY)
+
 loop_flag = True
 while loop_flag:
 	for mgr in window_mgrs:
-		mgr.set_foreground()
-		mgr.resize_to_cool()
+		try:
+			mgr.set_foreground()
+			time.sleep(delay_time)
+			mgr.resize_to_cool()
 		
-		script_flag = 1
-		while(script_flag == 1):
-			script_flag = main_script(mgr) #0 все плохо 1 продолжаем цикл 2 следующий
-		if(script_flag == 0):
-			send_alarm_telegram()
-			break
-		
+			script_flag = 1
+			while(script_flag != 2):
+				script_flag = start_group_attack(mgr) #0 все плохо 1 продолжаем цикл 2 следующий
+				if(script_flag == 0):
+					return_the_menu(mgr)
+			
+			script_flag = 1
+			while(script_flag != 2):
+				script_flag = farm_shahta(mgr) #0 все плохо 1 продолжаем цикл 2 следующий
+				if(script_flag == 0):
+					return_the_menu(mgr)
+		except:
+			return_the_menu(mgr)
 
-
-
-	#get_template_pos(frame,testim,0.6)
 
 
 
