@@ -7,3 +7,5 @@
 Бюджета, как и команды у меня нет, поэтому я
 пишу не запариваясь над красотой.
 
+Прошу, если вы знаете фишки для разработки бота для Kingdom Guard: Td, то пишите мне: gmodneurba@mail.ru
+Please, if you know the chips for developing the bot for Kingdom Guard: Td, write me: gmodneurba@mail.ru
