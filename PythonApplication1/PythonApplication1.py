@@ -12,10 +12,10 @@ COOL_HEIGHT = 768
 HALAV_STRELKA_X = 390
 HALAV_STRELKA_Y = 110
 
-shahta_delay = 5
-halava_delay = 5
+shahta_delay = 15
+halava_delay = 15
 
-window_names = ["BlueStacks App Player 6","BlueStacks App Player 7"]
+window_names = ["BlueStacks App Player 8","BlueStacks App Player 7"]
 window_mgrs = []
 delay_time = 2
 
@@ -130,25 +130,18 @@ def return_the_menu(mgr):
 	time.sleep(delay_time)
 	
 def add_time_to_json(json_file, time_name, time_obj):
-	# Преобразуем объект datetime в строку для сохранения в JSON-файл
 	time_str = time_obj.strftime('%Y-%m-%d %H:%M:%S')
 	
-	# Открываем JSON-файл и читаем его содержимое
 	try:
 		with open(json_file, 'r') as f:
 			data = json.load(f)
 	except FileNotFoundError:
-		# Если файла нет, создаем пустой словарь
 		data = {}
 	
-	# Добавляем новое время с именем в словарь
 	data[time_name] = time_str
 	
-	# Сохраняем обновленный словарь обратно в JSON-файл
 	with open(json_file, 'w') as f:
 		json.dump(data, f, indent=4)
-	
-	print(f"Новое время '{time_name}' добавлено в файл {json_file}.")
 	
 def get_time_from_json(json_file,time_name):
 	with open(json_file, 'r') as f:
@@ -156,7 +149,6 @@ def get_time_from_json(json_file,time_name):
 
 	time_str = data.get(time_name)
 	if time_str is None:
-		#raise ValueError(f"Время с именем '{time_name}' не найдено в файле {json_file}.")
 		add_time_to_json(json_file, time_name, datetime(1970,1,1,0,0))
 		return datetime(1970,1,1,0,0)
 
@@ -193,16 +185,15 @@ def start_group_attack(mgr):
 		return 0
 	time.sleep(delay_time)
 	
-	#frame = new_frame_gray(mgr)
-	#if(not click_on_template(mgr,frame,grup_attack,0.7)):
-	#	return False
-	#time.sleep(2)
-	#for i in range(0,10):
-	#	frame = new_frame_gray(mgr)
-	#	if(not click_on_template(mgr,frame,plusik,0.5)):
-	#		return 0
-	#	time.sleep(0.5)
-	#time.sleep(delay_time)
+	frame = new_frame_gray(mgr)
+	click_on_template(mgr,frame,grup_attack,0.83)
+	time.sleep(delay_time)
+	
+	for i in range(0,10):
+		frame = new_frame_gray(mgr)
+		click_on_template(mgr,frame,plusik,0.7)
+		time.sleep(0.5)
+	time.sleep(delay_time)
 	
 	frame = new_frame_gray(mgr)
 	if(not click_on_template(mgr,frame,poisk_grup,0.5)):
@@ -328,13 +319,16 @@ def claim_prise(mgr):
 	
 	frame = new_frame_gray(mgr)
 	while(click_on_template(mgr,frame,free,0.7)):
-		time.sleep(0.3)
+		time.sleep(0.5)
 		pyautogui.press('esc')
-		time.sleep(0.3)
+		time.sleep(0.5)
 		frame = new_frame_gray(mgr)
 	
-	pyautogui.scroll(-10)
+	
+	pyautogui.scroll(-1)
 	time.sleep(0.3)
+	pyautogui.scroll(-1)
+	time.sleep(1)
 	
 	frame = new_frame_gray(mgr)
 	while(click_on_template(mgr,frame,free,0.7)):
