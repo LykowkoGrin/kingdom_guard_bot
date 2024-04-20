@@ -7,7 +7,10 @@ import time
 
 COOL_WIGHT = 450
 COOL_HEIGHT = 768
-window_names = ["BlueStacks App Player 4","BlueStacks App Player 3"]
+HALAV_STRELKA_X = 390
+HALAV_STRELKA_Y = 110
+
+window_names = ["BlueStacks App Player 6"]
 window_mgrs = []
 delay_time = 2
 
@@ -48,8 +51,6 @@ class WindowMgr:
 		x,y,w,h = self.window_size()
 		win32gui.MoveWindow(self._handle, x, y, COOL_WIGHT, COOL_HEIGHT, True)
 		
-def send_alarm_telegram():
-	pass
 
 def click(global_x,global_y):
 	pyautogui.moveTo(global_x, global_y, duration=0.25)
@@ -270,6 +271,19 @@ def farm_shahta(mgr):
 	time.sleep(delay_time)
 	
 	return 2
+
+def claim_prise(mgr):
+	halav = cv2.cvtColor(cv2.imread("Halav.png",1),cv2.COLOR_BGR2GRAY)
+	frame = new_frame_gray(mgr)
+	#390 110
+	if(not click_on_template(mgr,frame,halav,0.6)):
+		return 0
+	time.sleep(delay_time)
+
+
+	x_win,y_win,w_win,h_win = mgr.window_size()
+	click(x_win + HALAV_STRELKA_X,y_win + HALAV_STRELKA_Y)
+	
 
 
 loop_flag = True
