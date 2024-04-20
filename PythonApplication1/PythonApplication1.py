@@ -4,15 +4,43 @@ import cv2
 import numpy as np
 import pyautogui
 import time
+import json
+from datetime import datetime
 
 COOL_WIGHT = 450
 COOL_HEIGHT = 768
 HALAV_STRELKA_X = 390
 HALAV_STRELKA_Y = 110
 
-window_names = ["BlueStacks App Player 6"]
+shahta_delay = 5
+halava_delay = 5
+
+window_names = ["BlueStacks App Player 6","BlueStacks App Player 7"]
 window_mgrs = []
 delay_time = 2
+
+###all images
+bashnya = cv2.cvtColor(cv2.imread("Bashnya.png",1),cv2.COLOR_BGR2GRAY)
+shahta = cv2.cvtColor(cv2.imread("Shahta.png",1),cv2.COLOR_BGR2GRAY)
+polychit = cv2.cvtColor(cv2.imread("Polychit.png",1),cv2.COLOR_BGR2GRAY)
+krestik = cv2.cvtColor(cv2.imread("Krestik.png",1),cv2.COLOR_BGR2GRAY)
+podtverdit2 = cv2.cvtColor(cv2.imread("Podtverdit2.png",1),cv2.COLOR_BGR2GRAY)
+
+free = cv2.cvtColor(cv2.imread("Free.png",1),cv2.COLOR_BGR2GRAY)
+halav = cv2.cvtColor(cv2.imread("Halav.png",1),cv2.COLOR_BGR2GRAY)
+
+globus = cv2.cvtColor(cv2.imread("Globus.png",1),cv2.COLOR_BGR2GRAY)
+poisk = cv2.cvtColor(cv2.imread("Poisk.png",1),cv2.COLOR_BGR2GRAY)
+grup_attack = cv2.cvtColor(cv2.imread("GrupAttack.png",1),cv2.COLOR_BGR2GRAY)###
+plusik = cv2.cvtColor(cv2.imread("Plusik.png",1),cv2.COLOR_BGR2GRAY) ###
+poisk_grup = cv2.cvtColor(cv2.imread("PoiskGrup.png",1),cv2.COLOR_BGR2GRAY)
+strelka = cv2.cvtColor(cv2.imread("Strelka.png",1),cv2.COLOR_BGR2GRAY)
+start_grup_attack = cv2.cvtColor(cv2.imread("StartGrupAttack.png",1),cv2.COLOR_BGR2GRAY)
+podtverdit = cv2.cvtColor(cv2.imread("Podtverdit.png",1),cv2.COLOR_BGR2GRAY)
+vpered = cv2.cvtColor(cv2.imread("Vpered.png",1),cv2.COLOR_BGR2GRAY)
+mechi = cv2.cvtColor(cv2.imread("Mechi.png",1),cv2.COLOR_BGR2GRAY)
+no_ochkov = cv2.cvtColor(cv2.imread("NoOchkov.png",1),cv2.COLOR_BGR2GRAY)
+###
 
 class WindowMgr:
 	"""Encapsulates some calls to the winapi for window management"""
@@ -51,7 +79,6 @@ class WindowMgr:
 		x,y,w,h = self.window_size()
 		win32gui.MoveWindow(self._handle, x, y, COOL_WIGHT, COOL_HEIGHT, True)
 		
-
 def click(global_x,global_y):
 	pyautogui.moveTo(global_x, global_y, duration=0.25)
 	pyautogui.click()
@@ -90,8 +117,6 @@ def find_bigger_counter(thresh):
 	return int(dM10 / dArea),int(dM01 / dArea)
 
 def return_the_menu(mgr):
-	podtverdit2 = cv2.cvtColor(cv2.imread("Podtverdit2.png",1),cv2.COLOR_BGR2GRAY)
-	mechi = cv2.cvtColor(cv2.imread("Mechi.png",1),cv2.COLOR_BGR2GRAY)
 	for i in range(4):
 		pyautogui.press('esc')
 		time.sleep(0.5)
@@ -104,7 +129,39 @@ def return_the_menu(mgr):
 	click_on_template(mgr,frame,mechi,0.7)
 	time.sleep(delay_time)
 	
+def add_time_to_json(json_file, time_name, time_obj):
+	# Преобразуем объект datetime в строку для сохранения в JSON-файл
+	time_str = time_obj.strftime('%Y-%m-%d %H:%M:%S')
+	
+	# Открываем JSON-файл и читаем его содержимое
+	try:
+		with open(json_file, 'r') as f:
+			data = json.load(f)
+	except FileNotFoundError:
+		# Если файла нет, создаем пустой словарь
+		data = {}
+	
+	# Добавляем новое время с именем в словарь
+	data[time_name] = time_str
+	
+	# Сохраняем обновленный словарь обратно в JSON-файл
+	with open(json_file, 'w') as f:
+		json.dump(data, f, indent=4)
+	
+	print(f"Новое время '{time_name}' добавлено в файл {json_file}.")
+	
+def get_time_from_json(json_file,time_name):
+	with open(json_file, 'r') as f:
+		data = json.load(f)
 
+	time_str = data.get(time_name)
+	if time_str is None:
+		#raise ValueError(f"Время с именем '{time_name}' не найдено в файле {json_file}.")
+		add_time_to_json(json_file, time_name, datetime(1970,1,1,0,0))
+		return datetime(1970,1,1,0,0)
+
+	return datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+	
 def click_on_template(mgr,gray_img,template,threshold):
 	for i in range(0,3):
 		win_x,win_y,_,_ = mgr.window_size()
@@ -124,18 +181,7 @@ for i in window_names:
 	window_mgrs.append(wnd) 
 	
 def start_group_attack(mgr):
-	#������� ������� �� esc
 	window_x,window_y,_,_ = mgr.window_size()
-	globus = cv2.cvtColor(cv2.imread("Globus.png",1),cv2.COLOR_BGR2GRAY)
-	poisk = cv2.cvtColor(cv2.imread("Poisk.png",1),cv2.COLOR_BGR2GRAY)
-	grup_attack = cv2.cvtColor(cv2.imread("GrupAttack.png",1),cv2.COLOR_BGR2GRAY)
-	plusik = cv2.cvtColor(cv2.imread("Plusik.png",1),cv2.COLOR_BGR2GRAY)
-	poisk_grup = cv2.cvtColor(cv2.imread("PoiskGrup.png",1),cv2.COLOR_BGR2GRAY)
-	strelka = cv2.cvtColor(cv2.imread("Strelka.png",1),cv2.COLOR_BGR2GRAY)
-	start_grup_attack = cv2.cvtColor(cv2.imread("StartGrupAttack.png",1),cv2.COLOR_BGR2GRAY)
-	podtverdit = cv2.cvtColor(cv2.imread("Podtverdit.png",1),cv2.COLOR_BGR2GRAY)
-	vpered = cv2.cvtColor(cv2.imread("Vpered.png",1),cv2.COLOR_BGR2GRAY)
-	mechi = cv2.cvtColor(cv2.imread("Mechi.png",1),cv2.COLOR_BGR2GRAY)
 	
 	frame = new_frame_gray(mgr)
 	if(not click_on_template(mgr,frame,globus,0.5)):
@@ -174,7 +220,6 @@ def start_group_attack(mgr):
 
 		return 1
 	
-	#������ ����
 	strelka_w,strelka_h = strelka.shape
 	rect_monstr_x0 = int(strelka_x - 2 * strelka_w)
 	rect_monstr_y0 = int(strelka_y + strelka_h)
@@ -218,6 +263,17 @@ def start_group_attack(mgr):
 		time.sleep(delay_time)
 		
 		return 2
+	time.sleep(delay_time)
+	
+	frame = new_frame_gray(mgr)
+	if(click_on_template(mgr,frame,no_ochkov,0.5)):
+		pyautogui.press('esc')
+		time.sleep(0.5)
+		frame = new_frame_gray(mgr)
+		click_on_template(mgr,frame,mechi,0.5)
+		time.sleep(0.3)
+		pyautogui.click()
+		return 2
 	
 	time.sleep(delay_time)
 	frame = new_frame_gray(mgr)
@@ -228,21 +284,7 @@ def start_group_attack(mgr):
 	
 	return 1
 
-	#mask = color_mask(frame,np.array([30,150,50]),np.array([255,255,180]))
-	#x,y = find_bigger_counter(mask)
-	#cv2.circle(frame, (globus_x, globus_y), 10, (0,0,255), -1)
-	
-	#cv2.imshow('Screen Capture', frame)
-	#if cv2.waitKey(1) & 0xFF == ord('q'):
-	#	return False
-	
 def farm_shahta(mgr):
-	bashnya = cv2.cvtColor(cv2.imread("Bashnya.png",1),cv2.COLOR_BGR2GRAY)
-	shahta = cv2.cvtColor(cv2.imread("Shahta.png",1),cv2.COLOR_BGR2GRAY)
-	polychit = cv2.cvtColor(cv2.imread("Polychit.png",1),cv2.COLOR_BGR2GRAY)
-	krestik = cv2.cvtColor(cv2.imread("Krestik.png",1),cv2.COLOR_BGR2GRAY)
-	mechi = cv2.cvtColor(cv2.imread("Mechi.png",1),cv2.COLOR_BGR2GRAY)
-	podtverdit2 = cv2.cvtColor(cv2.imread("Podtverdit2.png",1),cv2.COLOR_BGR2GRAY)
 	
 	frame = new_frame_gray(mgr)
 	if(not click_on_template(mgr,frame,bashnya,0.5)):
@@ -273,41 +315,75 @@ def farm_shahta(mgr):
 	return 2
 
 def claim_prise(mgr):
-	halav = cv2.cvtColor(cv2.imread("Halav.png",1),cv2.COLOR_BGR2GRAY)
 	frame = new_frame_gray(mgr)
 	#390 110
 	if(not click_on_template(mgr,frame,halav,0.6)):
 		return 0
 	time.sleep(delay_time)
-
-
-	x_win,y_win,w_win,h_win = mgr.window_size()
-	click(x_win + HALAV_STRELKA_X,y_win + HALAV_STRELKA_Y)
 	
-
+	x_win,y_win,w_win,h_win = mgr.window_size()
+	for i in range(12):
+		click(x_win + HALAV_STRELKA_X,y_win + HALAV_STRELKA_Y)
+		time.sleep(0.3)
+	
+	frame = new_frame_gray(mgr)
+	while(click_on_template(mgr,frame,free,0.7)):
+		time.sleep(0.3)
+		pyautogui.press('esc')
+		time.sleep(0.3)
+		frame = new_frame_gray(mgr)
+	
+	pyautogui.scroll(-10)
+	time.sleep(0.3)
+	
+	frame = new_frame_gray(mgr)
+	while(click_on_template(mgr,frame,free,0.7)):
+		time.sleep(0.3)
+		pyautogui.press('esc')
+		time.sleep(0.3)
+		frame = new_frame_gray(mgr)
+	
+	time.sleep(0.3)
+	pyautogui.press('esc')
+	return 2
 
 loop_flag = True
 while loop_flag:
+	i = 0
 	for mgr in window_mgrs:
 		try:
+			
 			mgr.set_foreground()
 			time.sleep(delay_time)
 			mgr.resize_to_cool()
-		
-			script_flag = 1
-			while(script_flag != 2):
-				script_flag = start_group_attack(mgr) #0 ��� ����� 1 ���������� ���� 2 ���������
-				if(script_flag == 0):
-					return_the_menu(mgr)
+			window_name = window_names[i]
 			
+			add_time_to_json("timings.json",window_name + " group attack",datetime.now())
 			script_flag = 1
 			while(script_flag != 2):
-				script_flag = farm_shahta(mgr) #0 ��� ����� 1 ���������� ���� 2 ���������
+				script_flag = start_group_attack(mgr) 
 				if(script_flag == 0):
 					return_the_menu(mgr)
+				
+			if((datetime.now() - get_time_from_json("timings.json",window_name + " farm shahta")).total_seconds() / 60 > shahta_delay):
+				add_time_to_json("timings.json",window_name + " farm shahta",datetime.now())
+				script_flag = 1
+				while(script_flag != 2):
+					script_flag = farm_shahta(mgr) 
+					if(script_flag == 0):
+						return_the_menu(mgr)
+
+			if((datetime.now() - get_time_from_json("timings.json",window_name + " claim prise")).total_seconds() / 60 > halava_delay):
+				add_time_to_json("timings.json",window_name + " claim prise",datetime.now())
+				script_flag = 1
+				while(script_flag != 2):
+					script_flag = claim_prise(mgr)
+					if(script_flag == 0):
+						return_the_menu(mgr)
+					
 		except:
 			return_the_menu(mgr)
-
+		i+=1
 
 
 
